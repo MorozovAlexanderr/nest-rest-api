@@ -16,13 +16,16 @@ import { RegistrationStatus } from './interfaces/registretionStatus.interface';
 import { UsersService } from '../users/users.service';
 import JwtRefreshGuard from './guards/jwt-refresh.guard';
 import {
+  ApiBearerAuth,
   ApiBody,
   ApiCreatedResponse,
+  ApiOperation,
   ApiResponse,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { UserLoginDto } from './dto/UserLogin.dto';
+import { User } from '../users/entities/user.entity';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -39,15 +42,17 @@ export class AuthController {
     return request.user;
   }
 
-  @Post('register')
+  @ApiOperation({ summary: 'Create user' })
   @ApiBody({ type: UserRegisterDto })
   @ApiCreatedResponse({
     description: 'The user has been successfully registered.',
+    type: [User],
   })
   @ApiResponse({
     status: 404,
     description: 'Registration failed',
   })
+  @Post('register')
   async register(
     @Body() registerData: UserRegisterDto,
   ): Promise<RegistrationStatus> {
@@ -55,10 +60,10 @@ export class AuthController {
   }
 
   @HttpCode(200)
+  @ApiOperation({ summary: 'Auth user' })
   @ApiBody({ type: UserLoginDto })
   @ApiResponse({
     status: 200,
-    description: 'User login',
   })
   @ApiUnauthorizedResponse({
     description: 'Unauthorised',
@@ -67,39 +72,34 @@ export class AuthController {
   @Post('login')
   async logIn(@Req() request: RequestWithUser) {
     const { user } = request;
-    const accessTokenCookie = this.authService.getCookieWithJwtAccessToken(
-      user.id,
-    );
-    const {
-      cookie: refreshTokenCookie,
-      token: refreshToken,
-    } = this.authService.getCookieWithJwtRefreshToken(user.id);
+    const accessToken = this.authService.getJwtAccessToken(user.id);
+    const refreshToken = this.authService.getJwtRefreshToken(user.id);
 
     await this.usersService.setCurrentRefreshToken(refreshToken, user.id);
 
-    request.res.setHeader('Set-Cookie', [
-      accessTokenCookie,
-      refreshTokenCookie,
-    ]);
-    return user;
+    return { accessToken, refreshToken };
   }
 
   @UseGuards(JwtRefreshGuard)
+  @ApiOperation({ summary: 'Refresh user token' })
+  @ApiBearerAuth()
+  @ApiResponse({
+    status: 200,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Unauthorised',
+  })
   @Get('refresh')
   refresh(@Req() request: RequestWithUser) {
-    const accessTokenCookie = this.authService.getCookieWithJwtAccessToken(
-      request.user.id,
-    );
-
-    request.res.setHeader('Set-Cookie', accessTokenCookie);
-    return request.user;
+    const accessToken = this.authService.getJwtAccessToken(request.user.id);
+    return { accessToken };
   }
 
   @HttpCode(200)
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @Post('logout')
   async logOut(@Req() request: RequestWithUser) {
     await this.usersService.removeRefreshToken(request.user.id);
-    request.res.setHeader('Set-Cookie', this.authService.getCookiesForLogOut());
   }
 }

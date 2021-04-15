@@ -18,52 +18,62 @@ import { UpdateTodoDto } from './dto/update-todo.dto';
 import JwtAuthGuard from '../auth/guards/jwt-auth.guard';
 import RequestWithUser from '../auth/interfaces/requestWithUser.interface';
 import {
+  ApiBearerAuth,
   ApiBody,
   ApiCookieAuth,
   ApiCreatedResponse,
   ApiNotFoundResponse,
+  ApiOperation,
   ApiResponse,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Todo } from './entities/todo.entity';
 
 @Controller('todos')
 @UseGuards(JwtAuthGuard)
-@ApiCookieAuth()
+@ApiBearerAuth()
 @ApiTags('todos')
 export class TodoController {
   constructor(private readonly todoService: TodoService) {}
 
-  @Post()
+  @ApiOperation({ summary: 'Create todo' })
   @ApiBody({ type: CreateTodoDto })
   @ApiCreatedResponse({
     description: 'Todo has been successfully created.',
     type: Todo,
   })
+  @Post()
   create(@Body() createTodoDto: CreateTodoDto): Promise<Todo> {
     return this.todoService.create(createTodoDto);
   }
 
   @UseInterceptors(CacheInterceptor)
-  @Get()
+  @ApiOperation({ summary: 'Get all todos' })
   @ApiResponse({
     status: 200,
-    description: 'Get all todos for current user',
     type: [Todo],
   })
+  @ApiUnauthorizedResponse({
+    description: 'Unauthorised',
+  })
+  @Get()
   findAllForUser(@Req() request: RequestWithUser): Promise<Todo[]> {
     return this.todoService.findAllForUser(request.user);
   }
 
-  @Get(':id')
+  @ApiOperation({ summary: 'Get todo' })
   @ApiResponse({
     status: 200,
-    description: 'Get todo by id',
     type: Todo,
   })
   @ApiNotFoundResponse({
     description: 'Todo not found',
   })
+  @ApiUnauthorizedResponse({
+    description: 'Unauthorised',
+  })
+  @Get(':id')
   findOne(
     @Param('id', ParseIntPipe) id: number,
     @Req() request: RequestWithUser,
@@ -71,16 +81,18 @@ export class TodoController {
     return this.todoService.findOne(id, request.user);
   }
 
-  @Patch(':id')
-  @Get(':id')
+  @ApiOperation({ summary: 'Update todo' })
   @ApiResponse({
     status: 200,
-    description: 'Update todo by id',
     type: Todo,
   })
   @ApiNotFoundResponse({
     description: 'Todo not found',
   })
+  @ApiUnauthorizedResponse({
+    description: 'Unauthorised',
+  })
+  @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateTodoDto: UpdateTodoDto,
@@ -88,11 +100,14 @@ export class TodoController {
     return this.todoService.update(id, updateTodoDto);
   }
 
-  @Delete(':id')
+  @ApiOperation({ summary: 'Delete todo' })
   @ApiResponse({
     status: 200,
-    description: 'Delete todo by id',
   })
+  @ApiUnauthorizedResponse({
+    description: 'Unauthorised',
+  })
+  @Delete(':id')
   remove(
     @Param('id', ParseIntPipe) id: number,
     @Req() request: RequestWithUser,
