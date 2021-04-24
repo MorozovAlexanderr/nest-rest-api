@@ -13,9 +13,8 @@ export class UsersService {
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
-    const newUser = await this.usersRepository.create(createUserDto);
-    await this.usersRepository.save(newUser);
-    return newUser;
+    const newUser = this.usersRepository.create(createUserDto);
+    return this.usersRepository.save(newUser);
   }
 
   async findAll(): Promise<User[]> {
@@ -73,7 +72,7 @@ export class UsersService {
   }
 
   async removeRefreshToken(userId: number) {
-    return this.usersRepository.update(userId, {
+    return await this.usersRepository.update(userId, {
       currentHashedRefreshToken: null,
     });
   }

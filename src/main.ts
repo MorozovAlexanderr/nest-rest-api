@@ -17,7 +17,7 @@ async function bootstrap() {
     .setTitle('Todo app')
     .setDescription('The todo API description')
     .setVersion('1.0')
-    .addCookieAuth('Authentication')
+    .addBearerAuth()
     .build();
   const customOptions: SwaggerCustomOptions = {
     swaggerOptions: {
