@@ -73,7 +73,7 @@ export class UsersService {
   }
 
   async removeRefreshToken(userId: number) {
-    return this.usersRepository.update(userId, {
+    return await this.usersRepository.update(userId, {
       currentHashedRefreshToken: null,
     });
   }
