@@ -3,24 +3,25 @@ import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Todo } from './entities/todo.entity';
-import { User } from '../users/entities/user.entity';
+import { TodoEntity } from './entities/todo.entity';
+import { UserEntity } from '../users/entities/user.entity';
 
 @Injectable()
 export class TodoService {
   constructor(
-    @InjectRepository(Todo) private todoRepository: Repository<Todo>,
+    @InjectRepository(TodoEntity)
+    private todoRepository: Repository<TodoEntity>,
   ) {}
 
   async create(createTodoDto: CreateTodoDto) {
     return this.todoRepository.save(createTodoDto);
   }
 
-  async findAllForUser(user: User): Promise<Todo[]> {
+  async findAllForUser(user: UserEntity): Promise<TodoEntity[]> {
     return this.todoRepository.find({ user });
   }
 
-  async findOne(id: number, user: User): Promise<Todo> {
+  async findOne(id: number, user: UserEntity): Promise<TodoEntity> {
     const todo = await this.todoRepository.findOne({ id, user });
     if (todo) {
       return todo;
@@ -28,7 +29,7 @@ export class TodoService {
     throw new HttpException('Item not found', HttpStatus.NOT_FOUND);
   }
 
-  async remove(id: number, user: User): Promise<void> {
+  async remove(id: number, user: UserEntity): Promise<void> {
     await this.todoRepository.delete({ id, user });
   }
 

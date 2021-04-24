@@ -1,9 +1,9 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
-import { User } from '../../users/entities/user.entity';
+import { UserEntity } from '../../users/entities/user.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
-@Entity()
-export class Todo {
+@Entity({ name: 'todos' })
+export class TodoEntity {
   @ApiProperty()
   @PrimaryGeneratedColumn()
   id: number;
@@ -18,7 +18,7 @@ export class Todo {
   @Column({ default: false })
   isCompleted: boolean;
 
-  @ApiProperty({ type: User })
-  @ManyToOne(() => User, (user) => user.todos)
-  user: User;
+  @ApiProperty({ type: UserEntity })
+  @ManyToOne(() => UserEntity, (user) => user.todos)
+  user: UserEntity;
 }

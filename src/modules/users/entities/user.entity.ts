@@ -1,11 +1,11 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { Exclude } from 'class-transformer';
-import { Todo } from '../../todos/entities/todo.entity';
+import { TodoEntity } from '../../todos/entities/todo.entity';
 import { UserRole } from '../enums/role.enum';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
-@Entity()
-export class User {
+@Entity({ name: 'users' })
+export class UserEntity {
   @ApiProperty()
   @PrimaryGeneratedColumn()
   id: number;
@@ -26,8 +26,8 @@ export class User {
   @Column({ default: true })
   isActive: boolean;
 
-  @OneToMany(() => Todo, (todo) => todo.user)
-  todos: Todo[];
+  @OneToMany(() => TodoEntity, (todo) => todo.user)
+  todos: TodoEntity[];
 
   @Column({
     nullable: true,
