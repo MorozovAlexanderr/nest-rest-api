@@ -24,7 +24,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { User } from './entities/user.entity';
+import { UserEntity } from './entities/user.entity';
 
 @Controller('users')
 @ApiTags('users')
@@ -35,10 +35,10 @@ export class UsersController {
   @ApiBody({ type: CreateUserDto })
   @ApiCreatedResponse({
     description: 'The user has been successfully created.',
-    type: User,
+    type: UserEntity,
   })
   @Post()
-  create(@Body() createUserDto: CreateUserDto): Promise<User> {
+  create(@Body() createUserDto: CreateUserDto): Promise<UserEntity> {
     return this.usersService.create(createUserDto);
   }
 
@@ -46,10 +46,10 @@ export class UsersController {
   @ApiResponse({
     status: 200,
     description: 'Get all users',
-    type: [User],
+    type: [UserEntity],
   })
   @Get()
-  findAll(): Promise<User[]> {
+  findAll(): Promise<UserEntity[]> {
     return this.usersService.findAll();
   }
 
@@ -57,13 +57,13 @@ export class UsersController {
   @ApiResponse({
     status: 200,
     description: 'Get user by id',
-    type: User,
+    type: UserEntity,
   })
   @ApiNotFoundResponse({
     description: 'User not found',
   })
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number): Promise<User> {
+  findOne(@Param('id', ParseIntPipe) id: number): Promise<UserEntity> {
     return this.usersService.getById(id);
   }
 
@@ -71,7 +71,7 @@ export class UsersController {
   @ApiResponse({
     status: 200,
     description: 'Update user by id',
-    type: User,
+    type: UserEntity,
   })
   @ApiNotFoundResponse({
     description: 'User not found',

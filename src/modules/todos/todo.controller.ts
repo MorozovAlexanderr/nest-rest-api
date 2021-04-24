@@ -20,7 +20,6 @@ import RequestWithUser from '../auth/interfaces/requestWithUser.interface';
 import {
   ApiBearerAuth,
   ApiBody,
-  ApiCookieAuth,
   ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiOperation,
@@ -28,7 +27,7 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { Todo } from './entities/todo.entity';
+import { TodoEntity } from './entities/todo.entity';
 
 @Controller('todos')
 @UseGuards(JwtAuthGuard)
@@ -41,10 +40,10 @@ export class TodoController {
   @ApiBody({ type: CreateTodoDto })
   @ApiCreatedResponse({
     description: 'Todo has been successfully created.',
-    type: Todo,
+    type: TodoEntity,
   })
   @Post()
-  create(@Body() createTodoDto: CreateTodoDto): Promise<Todo> {
+  create(@Body() createTodoDto: CreateTodoDto): Promise<TodoEntity> {
     return this.todoService.create(createTodoDto);
   }
 
@@ -52,20 +51,20 @@ export class TodoController {
   @ApiOperation({ summary: 'Get all todos' })
   @ApiResponse({
     status: 200,
-    type: [Todo],
+    type: [TodoEntity],
   })
   @ApiUnauthorizedResponse({
     description: 'Unauthorised',
   })
   @Get()
-  findAllForUser(@Req() request: RequestWithUser): Promise<Todo[]> {
+  findAllForUser(@Req() request: RequestWithUser): Promise<TodoEntity[]> {
     return this.todoService.findAllForUser(request.user);
   }
 
   @ApiOperation({ summary: 'Get todo' })
   @ApiResponse({
     status: 200,
-    type: Todo,
+    type: TodoEntity,
   })
   @ApiNotFoundResponse({
     description: 'Todo not found',
@@ -84,7 +83,7 @@ export class TodoController {
   @ApiOperation({ summary: 'Update todo' })
   @ApiResponse({
     status: 200,
-    type: Todo,
+    type: TodoEntity,
   })
   @ApiNotFoundResponse({
     description: 'Todo not found',

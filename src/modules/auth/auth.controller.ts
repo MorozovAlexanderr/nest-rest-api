@@ -25,7 +25,7 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { UserLoginDto } from './dto/UserLogin.dto';
-import { User } from '../users/entities/user.entity';
+import { UserEntity } from '../users/entities/user.entity';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -46,7 +46,7 @@ export class AuthController {
   @ApiBody({ type: UserRegisterDto })
   @ApiCreatedResponse({
     description: 'The user has been successfully registered.',
-    type: [User],
+    type: [UserEntity],
   })
   @ApiResponse({
     status: 404,

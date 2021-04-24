@@ -1,12 +1,12 @@
 import { CacheModule, Module } from '@nestjs/common';
 import { TodoService } from './todo.service';
 import { TodoController } from './todo.controller';
-import { Todo } from './entities/todo.entity';
+import { TodoEntity } from './entities/todo.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Todo]),
+    TypeOrmModule.forFeature([TodoEntity]),
     CacheModule.register({
       ttl: 5,
       max: 100,
