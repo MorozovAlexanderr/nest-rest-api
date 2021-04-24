@@ -20,7 +20,6 @@ import RequestWithUser from '../auth/interfaces/requestWithUser.interface';
 import {
   ApiBearerAuth,
   ApiBody,
-  ApiCookieAuth,
   ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiOperation,
