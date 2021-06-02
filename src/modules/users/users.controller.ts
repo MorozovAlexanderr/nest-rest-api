@@ -9,13 +9,6 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { UsersService } from './users.service';
-import { CreateUserDto } from './dtos/create-user.dto';
-import { UpdateUserDto } from './dtos/update-user.dto';
-import { Roles } from '../auth/decorators/roles.decorator';
-import { UserRole } from './enums/role.enum';
-import JwtAuthGuard from '../auth/guards/jwt-auth.guard';
-import { RolesGuard } from '../auth/guards/role.guard';
 import {
   ApiBody,
   ApiCreatedResponse,
@@ -24,6 +17,13 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { UsersService } from './users.service';
+import { CreateUserDto } from './dtos/create-user.dto';
+import { UpdateUserDto } from './dtos/update-user.dto';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { UserRole } from './enums/role.enum';
+import JwtAuthGuard from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/role.guard';
 import { UserEntity } from './entities/user.entity';
 import { UserDto } from './dtos/user.dto';
 
