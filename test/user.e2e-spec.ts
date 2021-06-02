@@ -3,7 +3,7 @@ import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { UsersModule } from '../src/modules/users/users.module';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { User } from '../src/modules/users/entities/user.entity';
+import { UserEntity } from '../src/modules/users/entities/user.entity';
 import { ValidationPipe } from '@nestjs/common';
 
 describe('UserController (e2e)', () => {
@@ -43,7 +43,7 @@ describe('UserController (e2e)', () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [UsersModule],
     })
-      .overrideProvider(getRepositoryToken(User))
+      .overrideProvider(getRepositoryToken(UserEntity))
       .useValue(mockUsersRepository)
       .compile();
 

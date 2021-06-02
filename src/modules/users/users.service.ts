@@ -1,10 +1,11 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { CreateUserDto } from './dtos/create-user.dto';
+import { UpdateUserDto } from './dtos/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './entities/user.entity';
-import { Repository } from 'typeorm';
+import { FindConditions, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import { UserDto } from './dtos/user.dto';
 
 @Injectable()
 export class UsersService {
@@ -13,13 +14,21 @@ export class UsersService {
     private usersRepository: Repository<UserEntity>,
   ) {}
 
+  /**
+   * Find single user
+   */
+  findOne(findData: FindConditions<UserEntity>): Promise<UserEntity> {
+    return this.usersRepository.findOne(findData);
+  }
+
   async create(createUserDto: CreateUserDto): Promise<UserEntity> {
     const newUser = this.usersRepository.create(createUserDto);
     return this.usersRepository.save(newUser);
   }
 
-  async findAll(): Promise<UserEntity[]> {
-    return await this.usersRepository.find();
+  async findAll(): Promise<UserDto[]> {
+    const users = await this.usersRepository.find();
+    return users.map((u) => u.toDto());
   }
 
   async getByEmail(email: string): Promise<UserEntity> {
@@ -33,10 +42,10 @@ export class UsersService {
     );
   }
 
-  async getById(id: number): Promise<UserEntity> {
+  async getById(id: number): Promise<UserDto> {
     const user = await this.usersRepository.findOne(id);
     if (user) {
-      return user;
+      return user.toDto();
     }
     throw new HttpException(
       'User with this id does not exist',
@@ -60,7 +69,7 @@ export class UsersService {
   }
 
   async getUserIfRefreshTokenMatches(refreshToken: string, userId: number) {
-    const user = await this.getById(userId);
+    const user = await this.findOne({ id: userId });
 
     const isRefreshTokenMatching = await bcrypt.compare(
       refreshToken,

@@ -10,8 +10,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { CreateUserDto } from './dtos/create-user.dto';
+import { UpdateUserDto } from './dtos/update-user.dto';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from './enums/role.enum';
 import JwtAuthGuard from '../auth/guards/jwt-auth.guard';
@@ -25,6 +25,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { UserEntity } from './entities/user.entity';
+import { UserDto } from './dtos/user.dto';
 
 @Controller('users')
 @ApiTags('users')
@@ -46,10 +47,10 @@ export class UsersController {
   @ApiResponse({
     status: 200,
     description: 'Get all users',
-    type: [UserEntity],
+    type: [UserDto],
   })
   @Get()
-  findAll(): Promise<UserEntity[]> {
+  findAll(): Promise<UserDto[]> {
     return this.usersService.findAll();
   }
 
@@ -57,13 +58,13 @@ export class UsersController {
   @ApiResponse({
     status: 200,
     description: 'Get user by id',
-    type: UserEntity,
+    type: UserDto,
   })
   @ApiNotFoundResponse({
     description: 'User not found',
   })
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number): Promise<UserEntity> {
+  findOne(@Param('id', ParseIntPipe) id: number): Promise<UserDto> {
     return this.usersService.getById(id);
   }
 

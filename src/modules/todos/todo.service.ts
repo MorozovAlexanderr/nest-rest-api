@@ -13,11 +13,15 @@ export class TodoService {
     private todoRepository: Repository<TodoEntity>,
   ) {}
 
-  async create(createTodoDto: CreateTodoDto) {
-    return this.todoRepository.save(createTodoDto);
+  async create(createTodoDto: CreateTodoDto, user: UserEntity) {
+    const newTodo = this.todoRepository.create({
+      user,
+      ...createTodoDto,
+    });
+    return this.todoRepository.save(newTodo);
   }
 
-  async findAllForUser(user: UserEntity): Promise<TodoEntity[]> {
+  async findAll(user: UserEntity): Promise<TodoEntity[]> {
     return this.todoRepository.find({ user });
   }
 
@@ -33,7 +37,11 @@ export class TodoService {
     await this.todoRepository.delete({ id, user });
   }
 
-  async update(id: number, updateTodoDto: UpdateTodoDto): Promise<void> {
-    await this.todoRepository.update(id, updateTodoDto);
+  async update(id: number, updateTodoDto: UpdateTodoDto, user: UserEntity) {
+    const todo = await this.todoRepository.find({ id, user });
+    if (todo) {
+      return this.todoRepository.update({ id, user }, updateTodoDto);
+    }
+    throw new HttpException('Item not found', HttpStatus.NOT_FOUND);
   }
 }

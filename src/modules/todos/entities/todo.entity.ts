@@ -19,6 +19,6 @@ export class TodoEntity {
   isCompleted: boolean;
 
   @ApiProperty({ type: UserEntity })
-  @ManyToOne(() => UserEntity, (user) => user.todos)
+  @ManyToOne(() => UserEntity, (user) => user.todos, { eager: true })
   user: UserEntity;
 }

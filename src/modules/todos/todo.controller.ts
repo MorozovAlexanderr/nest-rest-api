@@ -28,6 +28,8 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { TodoEntity } from './entities/todo.entity';
+import { User } from '../users/decorators/user.decorator';
+import { UserEntity } from '../users/entities/user.entity';
 
 @Controller('todos')
 @UseGuards(JwtAuthGuard)
@@ -43,8 +45,11 @@ export class TodoController {
     type: TodoEntity,
   })
   @Post()
-  create(@Body() createTodoDto: CreateTodoDto): Promise<TodoEntity> {
-    return this.todoService.create(createTodoDto);
+  create(
+    @Body() createTodoDto: CreateTodoDto,
+    @User() user: UserEntity,
+  ): Promise<TodoEntity> {
+    return this.todoService.create(createTodoDto, user);
   }
 
   @UseInterceptors(CacheInterceptor)
@@ -57,8 +62,8 @@ export class TodoController {
     description: 'Unauthorised',
   })
   @Get()
-  findAllForUser(@Req() request: RequestWithUser): Promise<TodoEntity[]> {
-    return this.todoService.findAllForUser(request.user);
+  findAll(@User() user: UserEntity): Promise<TodoEntity[]> {
+    return this.todoService.findAll(user);
   }
 
   @ApiOperation({ summary: 'Get todo' })
@@ -73,11 +78,8 @@ export class TodoController {
     description: 'Unauthorised',
   })
   @Get(':id')
-  findOne(
-    @Param('id', ParseIntPipe) id: number,
-    @Req() request: RequestWithUser,
-  ) {
-    return this.todoService.findOne(id, request.user);
+  findOne(@Param('id', ParseIntPipe) id: number, @User() user: UserEntity) {
+    return this.todoService.findOne(id, user);
   }
 
   @ApiOperation({ summary: 'Update todo' })
@@ -95,8 +97,9 @@ export class TodoController {
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateTodoDto: UpdateTodoDto,
+    @User() user: UserEntity,
   ) {
-    return this.todoService.update(id, updateTodoDto);
+    return this.todoService.update(id, updateTodoDto, user);
   }
 
   @ApiOperation({ summary: 'Delete todo' })
